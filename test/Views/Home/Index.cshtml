@@ -1,0 +1,60 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+</head>
+<body>
+    @*<button id="box">Push</button>*@
+
+    @Html.ActionLink("ауфф","Callback","Auth",null, null);
+
+    <a href="https://app.box.com/api/oauth2/authorize?response_type=code&client_id=s24y8ah30kx50uzzopct95s8belqi72e&redirect_uri=http%3A%2F%2Flocalhost%3A1176%2FAuth%2FCallback&state=security_token%3DKnhMJatFipTAnM0nHlZA">box</a>
+
+</body>
+</html>
+<script type="text/javascript" src="https://app.box.com/js/static/select.js"></script>
+<script type='text/javascript'>
+    $(document).ready(function () {
+        window.open("https://app.box.com/api/oauth2/authorize?response_type=code&client_id=s24y8ah30kx50uzzopct95s8belqi72e&redirect_uri=http%3A%2F%2Flocalhost%3A13473%2FBoxDrive%2FSaveFiles&state=security_token%3DKnhMJatFipTAnM0nHlZA");
+
+        var options = {
+            clientId: "s24y8ah30kx50uzzopct95s8belqi72e",
+            linkType: "direct",
+            multiselect: true
+        };
+        var boxSelect = new BoxSelect(options);
+      
+        // Register a success callback handler
+        boxSelect.success(function (response) {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "http://localhost:13473/BoxDrive/CallbackSaveFiles",
+                data: { ids: response[0].id, length: response[0].size }
+            })
+            .done(function (data) {
+                if (callback != null)
+                    callback(data);
+            })
+            .fail(function (xhr, error, thrownError) {
+                if (error_callback != null)
+                    error_callback("googleDriveSaveFiles", xhr, error, thrownError);
+                else if (oThis.onError != null)
+                    oThis.onError("googleDriveSaveFiles", xhr, error, thrownError);
+            });
+        });
+        // Register a cancel callback handler
+        boxSelect.cancel(function () {
+            console.log("The user clicked cancel or closed the popup");
+        });
+        boxSelect.launchPopup();
+    });
+</script>
